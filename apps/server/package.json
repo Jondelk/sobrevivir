@@ -1,0 +1,23 @@
+{
+  "name": "@sobrevivir/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sobrevivir/engine": "1.0.0",
+    "express": "^5.1.0",
+    "mongodb": "^7.0.0",
+    "socket.io": "^4.8.1",
+    "tsx": "^4.20.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "socket.io-client": "^4.8.1"
+  }
+}
