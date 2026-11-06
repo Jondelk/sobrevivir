@@ -2,25 +2,25 @@
 :root {
   /* Paleta extraída de referencias/ (logotipo, tablero y ruleta). Ver referencias/README.md. */
   --cream: #f5ede2;      /* fondo del logotipo y del tablero */
-  --paper: #fbf6ee;      /* cuerpo de las casillas */
+  --paper: #fffdf5;      /* cuerpo de las casillas (tablero v2) */
   --paper-2: #efe5d6;
   --line: #ddd0bd;
   --ink: #102431;        /* azul profundo del logotipo */
   --ink-2: #4a5a66;
-  --frame: #0c273c;      /* marco del tablero */
+  --frame: #2e3d43;      /* líneas y marco del tablero v2 */
   --turq: #038b88;       /* turquesa del logotipo (formas grandes) */
-  --turq-d: #037d7a;     /* turquesa para fondos con texto (4,98:1 con blanco) */
+  --turq-d: #117f7a;     /* banda de Inicio v2 (#148E89) oscurecida para texto blanco (4,84:1) */
   --turq-t: #d2ebe8;
-  --terra: #b85241;      /* compromisos */
+  --terra: #af543c;      /* compromisos (v2) */
   --terra-t: #f5dfd6;
-  --amber: #ea9d34;      /* imprevistos (texto oscuro encima) */
+  --amber: #a3650f;      /* imprevistos: ocre v2 (#B97415) oscurecido para texto blanco (4,75:1) */
   --amber-d: #8a5a00;
-  --amber-t: #fbe9c9;
-  --green: #4a7f38;      /* oportunidades; referencia #609144 oscurecido para texto blanco (4,79:1) */
+  --amber-t: #f6e7cc;
+  --green: #46764f;      /* oportunidades (v2), blanco 5,3:1 */
   --green-t: #e0ecd6;
-  --violet: #92559a;     /* compras y tentaciones */
+  --violet: #7b578c;     /* compras y tentaciones (v2) */
   --violet-t: #eadcee;
-  --bank: #33476a;       /* banco */
+  --bank: #28465e;       /* banco (v2) */
   --bank-t: #dbe1ea;
   --orange: #ed863b;     /* trazo naranja del logotipo */
   --radius: 14px;
@@ -92,7 +92,7 @@ a { color: var(--turq-d); text-underline-offset: 3px; }
 .btn-outline:hover:not(:disabled) { background: var(--paper); }
 .btn-ghost { background: transparent; text-decoration: underline; text-underline-offset: 3px; }
 .btn-commit { background: var(--terra); color: #fff; }
-.btn-surprise { background: var(--amber); color: var(--ink); }
+.btn-surprise { background: var(--amber); color: #fff; }
 .btn-opportunity { background: var(--green); color: #fff; }
 .btn-purchase { background: var(--violet); color: #fff; }
 .btn-bank { background: var(--bank); color: #fff; }
@@ -219,37 +219,41 @@ textarea { resize: vertical; }
 .board { position: relative; padding: 26px; }
 .board-grid {
   position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: repeat(7, minmax(0, 1fr));
-  gap: 3px; aspect-ratio: 1; background: var(--frame); padding: 6px; border-radius: 18px; container-type: inline-size;
-  box-shadow: 0 14px 30px -18px rgba(16, 36, 49, 0.7);
+  gap: 2px; aspect-ratio: 1; background: var(--frame); padding: 3px; border-radius: 2px; container-type: inline-size;
+  box-shadow: 0 14px 30px -20px rgba(16, 36, 49, 0.6);
 }
 .tile {
   --band: var(--ink); --band-ink: #fff;
-  position: relative; font: inherit; color: var(--ink); background: var(--paper); border: 0; border-radius: 6px; overflow: hidden;
-  display: flex; flex-direction: column; align-items: stretch; padding: 0; cursor: pointer; text-align: center; min-width: 0;
+  position: relative; font: inherit; color: var(--ink); background: var(--paper); border: 0; border-radius: 0; overflow: hidden;
+  display: flex; flex-direction: column; align-items: stretch; padding: 0; cursor: pointer; text-align: left; min-width: 0;
 }
-.tile:first-of-type { border-bottom-left-radius: 13px; }
 .tile-head {
-  background: var(--band); color: var(--band-ink); min-height: 27%; display: flex; align-items: center; justify-content: center;
-  padding: 2px 3px; flex: none;
+  background: var(--band); color: var(--band-ink); min-height: 29%; display: flex; align-items: center; justify-content: flex-start;
+  padding: 2px 6%; flex: none;
 }
 .tile-label {
-  font-weight: 900; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.02;
-  font-size: max(8px, 1.42cqw); overflow-wrap: anywhere;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1.05;
+  font-size: max(8px, 1.4cqw); overflow-wrap: anywhere;
 }
-.tile-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px 3px 4px; min-height: 0; }
-.tile-amount { font-weight: 900; font-size: max(8px, 1.45cqw); line-height: 1; white-space: nowrap; }
-.tile-art { display: block; max-width: 86%; max-height: 100%; min-height: 0; flex: 1 1 auto; object-fit: contain; }
+.tile-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 3px 6% 4px; min-height: 0; }
+.tile-amount { font-weight: 900; font-size: max(9px, 1.75cqw); line-height: 1; white-space: nowrap; display: flex; flex-direction: column; gap: 1px; }
+.tile-amount small { font-size: max(7px, 0.8cqw); font-weight: 600; color: var(--ink-2); letter-spacing: 0.02em; }
+.tile-art { display: block; height: 62%; max-height: 64px; width: auto; max-width: 78%; min-height: 0; flex: 0 1 auto; object-fit: contain; }
+.tile-body-amount .tile-art { height: 42%; }
+.tile-instruction { font-size: max(8px, 1.12cqw); line-height: 1.15; color: var(--ink-2); }
+/* las instrucciones solo se muestran cuando el tablero es grande; si no, quedan en la ayuda de cada casilla */
+@container (max-width: 780px) { .tile-instruction { display: none; } }
 .tile:hover { filter: brightness(0.98); }
 .tile-here { box-shadow: inset 0 0 0 3px var(--ink); }
 .tile-active { box-shadow: inset 0 0 0 4px var(--orange); }
 .tile-inicio, .mini-cell.tile-inicio { --band: var(--turq-d); --tint: var(--turq-t); }
 .tile-compromiso, .mini-cell.tile-compromiso { --band: var(--terra); --tint: var(--terra-t); }
-.tile-imprevisto, .mini-cell.tile-imprevisto { --band: var(--amber); --band-ink: var(--ink); --tint: var(--amber-t); }
+.tile-imprevisto, .mini-cell.tile-imprevisto { --band: var(--amber); --tint: var(--amber-t); }
 .tile-oportunidad, .mini-cell.tile-oportunidad { --band: var(--green); --tint: var(--green-t); }
 .tile-compra, .mini-cell.tile-compra { --band: var(--violet); --tint: var(--violet-t); }
 .tile-banco, .mini-cell.tile-banco { --band: var(--bank); --tint: var(--bank-t); }
 .board-center {
-  grid-row: 2 / 7; grid-column: 2 / 7; background: var(--cream); border-radius: 6px; padding: 14px 16px; overflow: auto;
+  grid-row: 2 / 7; grid-column: 2 / 7; background: var(--cream); border-radius: 0; padding: 14px 16px; overflow: auto;
   display: flex; flex-direction: column;
 }
 /* flechas del sentido del recorrido, fuera del marco */
@@ -271,13 +275,15 @@ textarea { resize: vertical; }
 .tile-info { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); width: min(90%, 380px); background: var(--paper); border: 2px solid var(--ink); border-radius: var(--radius); padding: 12px 14px; z-index: 4; box-shadow: var(--shadow); }
 .tile-info p { margin: 6px 0; }
 .board-compact { padding: 0; }
-.board-compact .board-grid { gap: 2px; padding: 4px; border-radius: 12px; }
-.board-compact .tile { border-radius: 4px; }
+.board-compact .board-grid { gap: 1px; padding: 2px; border-radius: 2px; }
+.board-compact .tile { border-radius: 0; }
+.board-compact .tile-body { align-items: center; }
+.board-compact .tile-art { height: 70%; max-width: 90%; }
 .board-compact .tile-head { min-height: 0; height: 9px; padding: 0; }
 .board-compact .tile-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .board-compact .tile-body { padding: 2px; }
 .board-compact .tile-art { max-width: 92%; }
-.board-compact .board-center { padding: 0; background: transparent; }
+.board-compact .board-center { padding: 0; background: var(--cream); }
 .board-compact .token { width: 22px; height: 22px; }
 .board-compact .token-dot { border-width: 3px; }
 
@@ -317,8 +323,6 @@ textarea { resize: vertical; }
 .card { border-radius: 14px; padding: 14px 16px; border: 2px solid var(--ink); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); animation: deal 0.35s ease-out; }
 .card h3 { font-size: 1.3rem; margin: 2px 0 6px; }
 .card-amount { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin: 0; }
-.card-imprevisto { border-top: 10px solid var(--amber); }
-.card-oportunidad { border-top: 10px solid var(--green); }
 @keyframes deal { from { transform: translateY(8px) rotate(-1.5deg); opacity: 0; } to { transform: none; opacity: 1; } }
 .catalog { display: grid; gap: 8px; }
 .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -333,6 +337,61 @@ textarea { resize: vertical; }
 .waiting { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .pulse { width: 16px; height: 16px; border-radius: 50%; background: var(--amber); animation: pulse 1.4s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(224, 160, 33, 0.7); } 70% { box-shadow: 0 0 0 14px rgba(224, 160, 33, 0); } 100% { box-shadow: 0 0 0 0 rgba(224, 160, 33, 0); } }
+
+/* tarjeta que se levanta (imprevistos, oportunidades, tentaciones) */
+.chip-cat-tentacion { background: var(--violet); color: #fff; }
+.chip-cat-imprevisto { background: var(--amber); color: #fff; }
+.chip-cat-oportunidad { background: var(--green); color: #fff; }
+.flip { perspective: 1400px; --cat: var(--ink); }
+.flip-tentacion { --cat: var(--violet); }
+.flip-imprevisto { --cat: var(--amber); }
+.flip-oportunidad { --cat: var(--green); }
+.flip-inner { display: grid; transform-style: preserve-3d; transition: transform 0.65s cubic-bezier(.3,.7,.25,1); }
+.flip-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; min-width: 0; }
+.flip-front { transform: rotateY(180deg); }
+.flip[data-state='girando'] .flip-inner, .flip[data-state='frente'] .flip-inner { transform: rotateY(180deg); }
+.flip[data-state='frente'] .flip-inner { transition: none; }
+.flip[data-state='reverso'] .flip-back { animation: lift 0.85s ease-out; }
+@keyframes lift { 0% { transform: translateY(14px) scale(0.96); opacity: 0; } 45% { opacity: 1; } 100% { transform: none; } }
+.flip-back {
+  border-radius: 14px; border: 3px solid var(--cat); background: var(--paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; padding: 0 0 22px; overflow: hidden;
+  box-shadow: 4px 4px 0 var(--frame); min-height: 240px;
+}
+.flip-back-band { align-self: stretch; background: var(--cat); color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; padding: 10px; }
+.flip-back-symbol { width: 110px; height: 110px; object-fit: contain; margin-top: auto; }
+.flip-back-label { font-weight: 900; font-size: 1.15rem; color: var(--cat); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
+.flip-back-instruction { font-weight: 700; margin-bottom: auto; }
+.card-face { border-radius: 14px; border: 3px solid var(--cat); background: var(--paper); overflow: visible; box-shadow: 4px 4px 0 var(--frame); }
+.card-tentacion { --cat: var(--violet); } .card-imprevisto { --cat: var(--amber); } .card-oportunidad { --cat: var(--green); }
+.card-face-head { background: var(--cat); color: #fff; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 8px 14px; border-radius: 10px 10px 0 0; }
+.card-cat { font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.card-sub { font-weight: 700; font-size: 0.9rem; }
+.card-face-body { padding: 10px 14px 4px; }
+.card-face-body p { margin: 0 0 6px; }
+.card-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.card-title-row h3 { font-size: 1.3rem; margin: 0; }
+.card-face .card-amount { font-size: 1.7rem; font-weight: 900; color: var(--ink); }
+.card-situation { font-size: 1rem; }
+.card-mechanic { font-size: 0.92rem; color: var(--ink-2); border-left: 4px solid var(--cat); padding-left: 8px; }
+.card-status { font-weight: 700; }
+.card-face-actions { padding: 4px 14px 14px; }
+.decision-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.decision-group { border-radius: 12px; border-top: 6px solid var(--cat); background: var(--cream); padding: 8px 12px; }
+.decision-group h4 { margin: 0 0 4px; font-size: 1rem; }
+.decision-tentacion { --cat: var(--violet); } .decision-imprevisto { --cat: var(--amber); } .decision-oportunidad { --cat: var(--green); }
+
+/* dentro del tablero de escritorio la tarjeta es más compacta para caber en el centro */
+.board-center .card-face-head { padding: 6px 12px; }
+.board-center .card-face-body { padding: 8px 12px 2px; }
+.board-center .card-title-row h3 { font-size: 1.15rem; }
+.board-center .card-face .card-amount { font-size: 1.4rem; }
+.board-center .card-situation { font-size: 0.95rem; }
+.board-center .card-mechanic { font-size: 0.85rem; }
+.board-center .card-face-actions { padding: 2px 12px 12px; }
+.board-center .card-face-actions .field { margin: 4px 0; }
+.board-center .flip-back { min-height: 200px; }
+.board-center .flip-back-symbol { width: 90px; height: 90px; }
 
 /* participantes y resumen */
 .participants { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }

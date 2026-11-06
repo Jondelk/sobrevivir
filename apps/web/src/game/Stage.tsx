@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   BANK_PRODUCTS,
   BOARD,
+  CARD_CATEGORIES,
   COMMITMENTS,
   DOUBLE_DIAMOND,
   MONTHLY_COMMITMENTS_TOTAL,
@@ -20,6 +21,7 @@ import {
   type FamilyState,
   type Phase,
 } from '@sobrevivir/engine';
+import { CardFlip } from '../components/CardFlip';
 import { Die } from '../components/Die';
 import { Icon } from '../components/Icons';
 import { tileArtFor } from '../brand';
@@ -155,7 +157,9 @@ function PurchaseResolution({ open }: { open: Open }) {
         : 'Sacaron esta tarjeta del mazo de compras. Comprar nunca es obligatorio.';
   return (
     <>
-      <p>{intro}</p>
+      <p>
+        <span className="chip chip-compra">Decisión voluntaria</span> {intro}
+      </p>
       <div className={`catalog ${offers.length > 2 ? 'catalog-grid' : ''}`} role="radiogroup" aria-label="Opciones de compra">
         {offers.map((o) => (
           <label key={o.id} className={`offer ${pick === o.id ? 'offer-on' : ''} ${o.price > avail ? 'offer-short' : ''}`}>
@@ -232,41 +236,138 @@ function CommitmentResolution({ open }: { open: Open }) {
   );
 }
 
+type CardKind = 'imprevisto' | 'oportunidad' | 'tentacion';
+
+function CardFront({
+  category,
+  name,
+  value,
+  situation,
+  extra,
+  children,
+}: {
+  category: CardKind;
+  name: string;
+  value: string;
+  situation: string;
+  extra?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  const cat = CARD_CATEGORIES[category];
+  return (
+    <article className={`card-face card-${category}`}>
+      <header className="card-face-head">
+        <span className="card-cat">{cat.singular}</span>
+        <span className="card-sub">{cat.subtitle}</span>
+      </header>
+      <div className="card-face-body">
+        <div className="card-title-row">
+          <h3 data-testid="card-name">{name}</h3>
+          <HelpTip title="¿Para qué sirve esta tarjeta?">{cat.purpose}</HelpTip>
+        </div>
+        <p className="card-amount" data-testid="card-value">{value}</p>
+        <p className="card-situation">{situation}</p>
+        <p className="card-mechanic">{cat.mechanic}</p>
+        {extra}
+      </div>
+      {children && <div className="card-face-actions">{children}</div>}
+    </article>
+  );
+}
+
+function TemptationCard({ open }: { open: Open }) {
+  const { family: f, act, busy, mode, readOnly } = useGame();
+  const ev = f.activeEvent!;
+  const item = PURCHASES.find((p) => p.id === ev.cardId)!;
+  const [why, setWhy] = useState('');
+  const avail = availableOf(f);
+  let actions: React.ReactNode = null;
+  if (ev.purchasedItemId) {
+    actions = (
+      <>
+        <p className="result-line">
+          <Icon name="check" /> Compraron <strong>{item.label}</strong> por <Money v={item.price} />.
+        </p>
+        {!readOnly && <Primary onClick={() => act({ type: 'terminarResolucion' })} disabled={busy}>Continuar a la gestión</Primary>}
+      </>
+    );
+  } else if (!readOnly) {
+    actions = (
+      <>
+        <ShortOfMoney price={item.price} open={open} />
+        <TextField label="¿Por qué? (opcional, ayuda a conversar)" value={why} onChange={setWhy} />
+        <div className="actions-stack">
+          <Primary
+            kind="purchase"
+            disabled={busy || item.price > avail}
+            onClick={() => act({ type: 'comprar', itemId: item.id, justificacion: why || undefined })}
+          >
+            {`${mode === 'aula' ? 'Solicitar compra' : 'Comprar'}: ${item.label} · ${formatCOP(item.price)}`}
+          </Primary>
+          <button type="button" className="btn btn-ghost btn-lg" disabled={busy} onClick={() => act({ type: 'pasarCompra', justificacion: why || undefined })}>
+            No comprar
+          </button>
+        </div>
+      </>
+    );
+  }
+  return (
+    <CardFlip
+      eventId={ev.eventId}
+      category="tentacion"
+      announce={`Tentación de gasto: ${item.label}, ${formatCOP(item.price)}. Pueden comprar o pasar.`}
+      front={
+        <CardFront category="tentacion" name={item.label} value={formatCOP(item.price)} situation={item.situation}>
+          {actions}
+        </CardFront>
+      }
+    />
+  );
+}
+
 function SurpriseResolution({ open }: { open: Open }) {
   const { family: f, act, busy, readOnly } = useGame();
   const ev = f.activeEvent!;
   const card = SURPRISES.find((c) => c.id === ev.cardId)!;
   const ob = obligationViews(f).find((o) => o.id === ev.obligationId)!;
-  return (
+  const extra = (
     <>
-      <article className="card card-imprevisto">
-        <span className="eyebrow">{card.kind === 'reintegro' ? 'Reintegro' : 'Imprevisto'}</span>
-        <h3>{card.label}</h3>
-        <p>{card.description}</p>
-        <p className="card-amount"><Money v={card.amount} /></p>
-        {card.kind === 'reintegro' && (
-          <p className="hint">
-            Simplificación del juego: se registra como reintegro pendiente de $300.000. No se descuenta del ingreso siguiente ni es un
-            crédito bancario.
-          </p>
-        )}
-      </article>
-      <p className="muted">
+      {card.kind === 'reintegro' && (
+        <p className="hint">
+          Simplificación del juego: se registra como reintegro pendiente de $300.000 del ingreso ya recibido. No se descuenta del
+          ingreso siguiente ni es un crédito bancario.
+        </p>
+      )}
+      <p className="card-status">
         Pagado <Money v={ob.paid} /> · pendiente <Money v={ob.pending} />
       </p>
-      {!readOnly && (
-        <div className="actions-stack">
-          {ob.pending > 0 && (
-            <button type="button" className="btn btn-surprise btn-lg" onClick={() => open({ kind: 'pagar', obligationId: ob.id })}>
-              Pagar todo o una parte
-            </button>
-          )}
-          <button type="button" className="btn btn-ghost btn-lg" disabled={busy} onClick={() => act({ type: 'terminarResolucion' })}>
-            {ob.pending > 0 ? 'Dejar pendiente y continuar' : 'Continuar'}
-          </button>
-        </div>
-      )}
     </>
+  );
+  return (
+    <CardFlip
+      eventId={ev.eventId}
+      category="imprevisto"
+      announce={`Imprevisto: ${card.label}, ${formatCOP(card.amount)}. Queda registrado como pendiente hasta que decidan cómo pagarlo.`}
+      front={
+        <CardFront category="imprevisto" name={card.label} value={`−${formatCOP(card.amount)}`} situation={card.description} extra={extra}>
+          {!readOnly && (
+            <div className="actions-stack">
+              {ob.pending > 0 && (
+                <div className="manage-row">
+                  <button type="button" className="btn btn-surprise" onClick={() => open({ kind: 'pagar', obligationId: ob.id })}>
+                    Pagar todo o una parte
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => open({ kind: 'credito' })}>Crédito</button>
+                </div>
+              )}
+              <button type="button" className="btn btn-ghost btn-lg" disabled={busy} onClick={() => act({ type: 'terminarResolucion' })}>
+                {ob.pending > 0 ? 'Dejar pendiente y continuar' : 'Continuar'}
+              </button>
+            </div>
+          )}
+        </CardFront>
+      }
+    />
   );
 }
 
@@ -275,22 +376,29 @@ function OpportunityResolution() {
   const ev = f.activeEvent!;
   const card = OPPORTUNITIES.find((c) => c.id === ev.cardId)!;
   return (
-    <>
-      <article className="card card-oportunidad">
-        <span className="eyebrow">Oportunidad</span>
-        <h3>{card.label}</h3>
-        <p>{card.description}</p>
-        <p className="card-amount">+<Money v={card.amount} /></p>
-      </article>
-      {!readOnly &&
-        (ev.collected ? (
-          <Primary onClick={() => act({ type: 'terminarResolucion' })} disabled={busy}>Continuar</Primary>
-        ) : (
-          <Primary kind="opportunity" onClick={() => act({ type: 'cobrarOportunidad' })} disabled={busy}>
-            {mode === 'aula' ? `Solicitar al Banco ${formatCOP(card.amount)}` : `Recibir ${formatCOP(card.amount)}`}
-          </Primary>
-        ))}
-    </>
+    <CardFlip
+      eventId={ev.eventId}
+      category="oportunidad"
+      announce={`Oportunidad: ${card.label}, más ${formatCOP(card.amount)}.`}
+      front={
+        <CardFront
+          category="oportunidad"
+          name={card.label}
+          value={`+${formatCOP(card.amount)}`}
+          situation={card.description}
+          extra={ev.collected ? <p className="card-status ok">Beneficio registrado.</p> : null}
+        >
+          {!readOnly &&
+            (ev.collected ? (
+              <Primary onClick={() => act({ type: 'terminarResolucion' })} disabled={busy}>Continuar</Primary>
+            ) : (
+              <Primary kind="opportunity" onClick={() => act({ type: 'cobrarOportunidad' })} disabled={busy}>
+                {mode === 'aula' ? `Solicitar al Banco ${formatCOP(card.amount)}` : `Recibir ${formatCOP(card.amount)}`}
+              </Primary>
+            ))}
+        </CardFront>
+      }
+    />
   );
 }
 
@@ -344,19 +452,21 @@ function Resolution({ open }: { open: Open }) {
   const ev = f.activeEvent;
   if (!ev) return null;
   const tile = BOARD[ev.tileIndex];
+  const isCardTile = ['imprevisto', 'oportunidad', 'compra_opcional', 'tentacion'].includes(tile.kind);
   return (
     <section className={`resolution res-${tile.kind}`} aria-labelledby="res-title">
-      <header className="res-head">
+      <header className={`res-head ${isCardTile ? 'sr-only' : ''}`}>
         <img className="res-art" src={tileArtFor(tile)} alt="" />
         <h2 id="res-title">{tile.label}</h2>
-        <HelpTip title={tile.label}>{tileHelp(tile)}</HelpTip>
+        {!isCardTile && <HelpTip title={tile.label}>{tileHelp(tile)}</HelpTip>}
       </header>
       {tile.kind === 'compromiso' && <CommitmentResolution open={open} />}
       {tile.kind === 'imprevisto' && <SurpriseResolution open={open} />}
       {tile.kind === 'oportunidad' && <OpportunityResolution />}
-      {ev.offers && <PurchaseResolution open={open} />}
+      {(tile.kind === 'compra_opcional' || tile.kind === 'tentacion') && <TemptationCard open={open} />}
+      {(tile.kind === 'centro_comercial' || tile.kind === 'salida_familiar') && <PurchaseResolution open={open} />}
       {tile.kind === 'banco' && <BankResolution open={open} />}
-      {tile.kind !== 'oportunidad' && <ManageRow open={open} />}
+      {!isCardTile && <ManageRow open={open} />}
     </section>
   );
 }

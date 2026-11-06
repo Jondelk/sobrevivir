@@ -44,6 +44,8 @@ export async function step(page: Page) {
       await s.getByRole('button', { name: 'Mover la ficha' }).click();
       break;
     case 'Resolver la casilla': {
+      // Si se está levantando una tarjeta, espera a que termine de voltearse.
+      await expect(page.locator('[data-testid="card-flip"]:not([data-state="frente"])')).toHaveCount(0, { timeout: 5000 });
       const receive = s.getByRole('button', { name: /^Recibir \$/ });
       const pass = s.getByRole('button', { name: 'No comprar' });
       if (await receive.isVisible()) await receive.click();

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode, type KeyboardEvent } from 'react';
-import { BOARD, CATEGORY_LABEL, COMMITMENTS, TILE_CATEGORY, formatCOP, tileGridPosition, type Tile } from '@sobrevivir/engine';
+import { BOARD, CATEGORY_LABEL, COMMITMENTS, MONTHLY_INCOME, TILE_CATEGORY, formatCOP, tileGridPosition, type Tile } from '@sobrevivir/engine';
 import { tileArtFor } from '../brand';
 import { prefersReducedMotion } from '../lib/router';
 
@@ -13,6 +13,19 @@ const TILE_HELP: Record<Tile['kind'], string> = {
   tentacion: 'Se saca una tarjeta del mazo de compras. Conversen antes de decidir.',
   salida_familiar: 'Cine, cena familiar o no salir. Máximo una opción.',
   banco: 'Revisen deuda, alternativas y abonos. Caer aquí no obliga a contratar.',
+};
+
+/** Instrucción breve de cada casilla, como en el tablero de referencia v2. */
+const TILE_INSTRUCTION: Record<Tile['kind'], string> = {
+  inicio: 'Al volver, cierra el mes.',
+  compromiso: 'Paga, reserva o deja pendiente.',
+  imprevisto: 'Toma una tarjeta.',
+  oportunidad: 'Toma una tarjeta.',
+  centro_comercial: 'Elige una compra o pasa.',
+  compra_opcional: 'Compra o pasa.',
+  tentacion: 'Compra o pasa.',
+  salida_familiar: 'Cine o cena. Elige o pasa.',
+  banco: 'Consulta un crédito o abona.',
 };
 
 export function tileHelp(tile: Tile) {
@@ -112,9 +125,15 @@ export function Board({ position, familyLabel, activeIndex, children, compact, t
               <span className="tile-head">
                 <span className="tile-label">{tile.label}</span>
               </span>
-              <span className="tile-body" aria-hidden="true">
-                {tile.concept && !compact && <span className="tile-amount">{formatCOP(COMMITMENTS[tile.concept].amount)} / mes</span>}
+              <span className={`tile-body ${tile.concept || tile.kind === 'inicio' ? 'tile-body-amount' : ''}`} aria-hidden="true">
+                {!compact && (tile.concept || tile.kind === 'inicio') && (
+                  <span className="tile-amount">
+                    {formatCOP(tile.concept ? COMMITMENTS[tile.concept].amount : MONTHLY_INCOME)}
+                    {tile.concept && <small>COP / mes</small>}
+                  </span>
+                )}
                 <img className="tile-art" src={tileArtFor(tile)} alt="" draggable={false} />
+                {!compact && <span className="tile-instruction">{TILE_INSTRUCTION[tile.kind]}</span>}
               </span>
             </button>
           );

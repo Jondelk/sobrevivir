@@ -7,3 +7,4 @@
 5. Revisión visual en escritorio y celular. Corregido: desbordamiento horizontal en celular causado por etiquetas ocultas dentro de tablas desplazables; botones de diálogos fijos al pie.
 6. Pruebas Playwright de recorridos críticos, incluido el modo conectado con tres dispositivos simulados.
 7. Integración de los recursos aprobados (logotipo, tablero y ruleta): logotipo sin modificar, ilustraciones recortadas del tablero, paleta extraída con ajustes de contraste, ruleta con flecha giratoria, tipografía Nunito. Verificado con typecheck, Vitest, build, Playwright y capturas en escritorio y celular.
+8. Tablero v2, definición pedagógica de tentaciones, imprevistos y oportunidades (nombres de oportunidades actualizados) y animación de levantar la tarjeta. Verificado con typecheck, Vitest (46), build, Playwright (12) y capturas en escritorio y celular.

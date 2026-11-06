@@ -1,4 +1,4 @@
-import { COMMITMENTS, COMMITMENT_CONCEPTS, MONTHLY_INCOME, OPPORTUNITIES, PURCHASES, RULES_VERSION, SURPRISES, formatCOP } from '@sobrevivir/engine';
+import { CARD_CATEGORIES, COMMITMENTS, COMMITMENT_CONCEPTS, MONTHLY_INCOME, OPPORTUNITIES, PURCHASES, RULES_VERSION, SURPRISES, formatCOP } from '@sobrevivir/engine';
 
 /** Reglas esenciales, divididas en secciones que se abren cuando se necesitan. */
 export function RulesHelp({ essentialOnly }: { essentialOnly?: boolean }) {
@@ -30,6 +30,35 @@ export function RulesHelp({ essentialOnly }: { essentialOnly?: boolean }) {
           disponible. Se puede liberar, y liberar tampoco es un ingreso.
         </p>
       </details>
+      <details open={essentialOnly}>
+        <summary>Tentaciones, imprevistos y oportunidades</summary>
+        <p>
+          Estas tarjetas no son gastos obligatorios: el arriendo, la alimentación, el transporte y la educación existen aparte, cada mes.
+          Ninguna decisión se califica sola; se conversa según lo que la familia necesita y lo que produce.
+        </p>
+        <div className="table-wrap">
+          <table className="table">
+            <caption className="sr-only">Cómo se diferencian las tres categorías</caption>
+            <thead>
+              <tr><th scope="col">Categoría</th><th scope="col">¿Qué sucede?</th><th scope="col">¿La familia decide?</th></tr>
+            </thead>
+            <tbody>
+              {(['tentacion', 'imprevisto', 'oportunidad'] as const).map((id) => {
+                const c = CARD_CATEGORIES[id];
+                return (
+                  <tr key={id}>
+                    <th scope="row">
+                      <span className={`chip chip-cat-${id}`}>{c.singular}</span>
+                    </th>
+                    <td>{c.whatHappens}</td>
+                    <td>{c.familyDecides}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </details>
       {!essentialOnly && (
         <>
           <details>
@@ -51,7 +80,8 @@ export function RulesHelp({ essentialOnly }: { essentialOnly?: boolean }) {
           </details>
           <details>
             <summary>Oportunidades</summary>
-            <p>{OPPORTUNITIES.map((o) => `${o.label}: ${formatCOP(o.amount)}`).join('; ')}. Cada aparición se recibe una sola vez.</p>
+            <p>{OPPORTUNITIES.map((o) => `${o.label}: ${formatCOP(o.amount)}`).join('; ')}. Cada aparición se recibe una sola vez y no genera deudas.</p>
+            <p className="muted">Estas cinco tarjetas son una propuesta de la versión piloto, posterior al documento pedagógico original.</p>
           </details>
           <details>
             <summary>Banco</summary>

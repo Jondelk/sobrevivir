@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import {
+  CARD_CATEGORIES,
   FAMILY_PROFILES,
+  OPPORTUNITIES,
   PURCHASES,
+  formatCOP,
   REFLECTION_QUESTIONS,
   movementsToCSV,
   obligationViews,
@@ -14,19 +17,58 @@ import { monthFlows } from './Closing';
 
 export function DecisionSummary({ f }: { f: FamilyState }) {
   const purchases = f.movements.filter((m) => m.type === 'compra');
-  const passes = f.decisions.filter((d) => d.type === 'pasar_compra').length;
+  const passes = f.decisions.filter((d) => d.type === 'pasar_compra');
   const credits = f.decisions.filter((d) => d.type === 'credito');
   const notes = f.decisions.filter((d) => d.type === 'nota_turno');
+  const surprises = obligationViews(f).filter((o) => o.kind !== 'compromiso');
+  const opportunities = f.movements.filter((m) => m.type === 'oportunidad');
   return (
     <div className="decisions">
-      <ul className="plain-list">
-        <li>
-          Compras realizadas: {purchases.length === 0 ? 'ninguna' : purchases.map((m) => PURCHASES.find((p) => p.id === m.ref.itemId)?.label).join(', ')}.
-        </li>
-        <li>Veces que decidieron no comprar: {passes}.</li>
-        <li>Créditos: {credits.length === 0 ? 'ninguno' : credits.map((c) => c.text).join(' ')}</li>
-        <li>Imprevistos que aparecieron: {f.obligations.filter((o) => o.kind !== 'compromiso').map((o) => o.label).join(', ') || 'ninguno'}.</li>
-      </ul>
+      <div className="decision-groups">
+        <section className="decision-group decision-tentacion">
+          <h4>{CARD_CATEGORIES.tentacion.label}: lo que decidieron comprar</h4>
+          <ul className="plain-list">
+            <li>
+              Compraron:{' '}
+              {purchases.length === 0
+                ? 'nada'
+                : purchases.map((m) => `${PURCHASES.find((p) => p.id === m.ref.itemId)?.label} (${formatCOP(m.amount)}, mes ${m.month})`).join(', ')}
+              .
+            </li>
+            <li>Decidieron no comprar {passes.length} {passes.length === 1 ? 'vez' : 'veces'}.</li>
+          </ul>
+        </section>
+        <section className="decision-group decision-imprevisto">
+          <h4>{CARD_CATEGORIES.imprevisto.label}: lo que les ocurrió</h4>
+          {surprises.length === 0 ? (
+            <p>No aparecieron imprevistos.</p>
+          ) : (
+            <ul className="plain-list">
+              {surprises.map((o) => (
+                <li key={o.id}>
+                  {o.label} (mes {o.month}, {formatCOP(o.original)}): pagado {formatCOP(o.paid)}
+                  {o.pending > 0 ? `, pendiente ${formatCOP(o.pending)}` : ''}.
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <section className="decision-group decision-oportunidad">
+          <h4>{CARD_CATEGORIES.oportunidad.label}: lo que aprovecharon</h4>
+          {opportunities.length === 0 ? (
+            <p>No aparecieron oportunidades.</p>
+          ) : (
+            <ul className="plain-list">
+              {opportunities.map((m) => (
+                <li key={m.id}>
+                  {OPPORTUNITIES.find((o) => o.id === m.ref.cardId)?.label ?? m.description} (mes {m.month}): +{formatCOP(m.amount)}.
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+      <p>Créditos: {credits.length === 0 ? 'ninguno.' : credits.map((c) => c.text).join(' ')}</p>
       {notes.length > 0 && (
         <>
           <h4>Notas de los turnos</h4>

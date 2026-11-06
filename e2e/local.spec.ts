@@ -37,14 +37,29 @@ test.describe('Demostración local', () => {
     for (let i = 0; i < 400 && !(bought && passed); i++) {
       const p = await phase(page);
       const pass = page.locator('.stage').getByRole('button', { name: 'No comprar' });
+      if (p === 'Resolver la casilla') {
+        await expect(page.locator('[data-testid="card-flip"]:not([data-state="frente"])')).toHaveCount(0, { timeout: 5000 });
+      }
       if (p === 'Resolver la casilla' && (await pass.isVisible())) {
         const before = await cash(page);
+        const buy = page.locator('.stage').getByRole('button', { name: /^Comprar:/ });
+        const offers = page.locator('.stage .offer');
         const affordable = page.locator('.stage .offer:not(.offer-short)');
-        if (!bought && (await affordable.count()) > 0) {
-          const option = affordable.first();
-          await option.click();
-          const price = parseMoney(await option.locator('.offer-price').innerText());
-          await page.locator('.stage').getByRole('button', { name: /^Comprar:/ }).click();
+        let price = 0;
+        let canBuy = false;
+        if ((await offers.count()) > 0) {
+          if ((await affordable.count()) > 0) {
+            await affordable.first().click();
+            price = parseMoney(await affordable.first().locator('.offer-price').innerText());
+            canBuy = true;
+          }
+        } else {
+          // Tarjeta de tentación: el precio está en el frente de la tarjeta
+          price = parseMoney(await page.getByTestId('card-value').innerText());
+          canBuy = await buy.isEnabled();
+        }
+        if (!bought && canBuy) {
+          await buy.click();
           await expect(page.getByText(/Compraron/)).toBeVisible();
           expect(await cash(page)).toBe(before - price);
           bought = true;

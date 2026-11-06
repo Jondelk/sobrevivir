@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { FAMILY_PROFILES, PERSONAL_COLORS, PHASE_LABEL, RuleError, type FamilyCommand, type FamilyState } from '@sobrevivir/engine';
 import { Board } from '../components/Board';
+import { markPresentOnLoad } from '../components/CardFlip';
 import { ErrorBanner, GameCtx, type GameCtxValue } from '../components/ui';
 import { useMediaQuery } from '../lib/router';
 import { Accounts, MoneySummary } from './Accounts';
@@ -50,6 +51,12 @@ export function GameScreen({ family: f, dispatch, mode, readOnly = false, topSlo
   const mobile = useMediaQuery('(max-width: 860px)');
   const busyRef = useRef(false);
   const prevPhase = useRef(f.phase);
+  const loadedRef = useRef(false);
+  if (!loadedRef.current) {
+    // Una tarjeta que ya estaba activa al abrir o recargar la página se muestra volteada, sin animación.
+    loadedRef.current = true;
+    markPresentOnLoad(f.activeEvent?.eventId);
+  }
 
   useEffect(() => {
     if (prevPhase.current !== f.phase) {

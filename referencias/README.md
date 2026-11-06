@@ -6,9 +6,38 @@ Recursos aprobados de PIXELES e integración en la aplicación.
 | --- | --- |
 | `logo-pixeles.png` (1536×1024, fondo crema, sin transparencia) | Marca completa del juego: «SOBREVIVIR» (azul profundo), «AL MES» (turquesa), trazo naranja, «Educación financiera para no financieros» y «Una experiencia educativa de PIXELES». |
 | `tablero.png` (1254×1254) | Tablero 7 × 7 con marco azul profundo, casillas con cabecera de color y título en mayúsculas, cuerpo claro con ilustración plana y frase breve; centro con la marca, reglas resumidas y los tres mazos; flechas exteriores con el sentido del recorrido. |
+| `tablero-v2.webp` (2000×2000) | **Tablero vigente.** Mismo orden y sentido; casillas con cabecera de color y título en mayúsculas alineado a la izquierda, iconos lineales dentro de un círculo, importe grande con «COP / mes», instrucción breve, líneas finas y esquinas rectas; centro con la marca, «3 VUELTAS · 3 MESES», «GIRA → LANZA → AVANZA → CONVERSA → REGISTRA», los tres mazos y un resumen de reglas. |
 | `ruleta.png` (1254×1254) | Rueda fija de cinco sectores iguales (Azul arriba; en sentido horario Naranja, Verde, Morado, Rojo) con nombres en mayúsculas blancas, borde azul profundo, centro crema y una flecha recortable que gira sobre el centro. |
 
-## Qué quedó integrado y dónde
+## Tablero v2 (vigente)
+
+**Integrado:**
+- 12 iconos recortados de `tablero-v2.webp` (círculo y trazo, con el fondo crema transparente) en `apps/web/public/marca/casillas/`. Reemplazan las ilustraciones del v1 con los mismos nombres de archivo; se eliminó `tentaciones_mazo.png`, que no se usaba.
+- Estilo de las casillas: cabecera de color con el título a la izquierda, importe con «COP / mes» en compromisos e Inicio, icono en círculo e instrucción breve. La instrucción solo aparece cuando el tablero mide más de 780 px; con tableros más pequeños queda en la ayuda de cada casilla, para no mostrar texto ilegible.
+- Líneas finas `#2E3D43` y esquinas rectas.
+- El reverso de las tarjetas usa los iconos de Imprevisto, Oportunidad y Tentación del v2.
+
+**Paleta v2 y ajustes de contraste (texto blanco sobre las bandas):**
+
+| Uso | v2 | En la app | Contraste |
+| --- | --- | --- | --- |
+| Compromisos | `#AF543C` | igual | 5,05:1 |
+| Compras y tentaciones | `#7B578C` | igual | 5,86:1 |
+| Imprevistos (ocre) | `#B97415` | `#A3650F` | el original da 3,77:1; ajustado da 4,75:1 |
+| Oportunidades | `#46764F` | igual | 5,30:1 |
+| Banco | `#28465E` | igual | 9,87:1 |
+| Inicio (turquesa) | `#148E89` | `#117F7A` | el original da 3,99:1; ajustado da 4,84:1 |
+| Líneas | `#2E3D43` | igual | — |
+| Cuerpo de casillas | `#FFFDF5` | igual | — |
+| Página | `#F6F1E5` | se conserva `#F5EDE2` | igualar la página al fondo del v2 haría visible un recuadro alrededor del logotipo |
+
+La tipografía del v2 es una sans geométrica sencilla; se mantiene Nunito (servida localmente) porque coincide con el logotipo aprobado.
+
+**Diferencias con las reglas:** ninguna. El orden de las 24 casillas, Inicio abajo a la izquierda, el sentido del recorrido (flechas) y las oportunidades en las posiciones internas 5, 10, 15, 20 y 23 coinciden con `packages/engine/src/board.ts`. Diferencias menores de texto:
+- «Toma una tentación: compra o pasa» se abrevia como «Compra o pasa».
+- El centro del tablero sigue siendo el área de juego; su contenido (marca, reglas y mazos) está en la barra superior, en «Reglas» y en las tarjetas.
+
+## Integración del v1 (histórico)
 
 | Recurso | Ubicación en la app | Notas |
 | --- | --- | --- |

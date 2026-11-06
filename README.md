@@ -108,7 +108,17 @@ Socket.IO avisa a la familia y al personal de la sala; al reconectar el cliente 
 - **Pagar, reservar, dejar pendiente:** pagos parciales sobre una obligación elegida; reservas que no son gasto, no aumentan el efectivo y pueden liberarse; pagar desde una reserva reduce reserva y efectivo. Nunca hay efectivo negativo; una familia sin dinero sigue jugando.
 - **Compras:** catálogo exacto de seis artículos. Centro Comercial: máximo una compra. Compra Opcional y Tentación: una tarjeta del mazo de compras. Salida Familiar: cine, cena o nada. Sin fondos, la oferta sigue abierta mientras liberan una reserva o piden crédito.
 - **Imprevistos:** crean una obligación con ID propio; la aparición no descuenta efectivo. La *pérdida parcial de ingresos* se representa como **reintegro** de $300.000 del ingreso ya recibido (no se descuenta del ingreso siguiente ni es crédito). Esta simplificación se explica en la ayuda del juego.
-- **Oportunidades (configuración del piloto):** trabajo ocasional $150.000, venta de un objeto $100.000, apoyo de una red cercana $100.000, premio comunitario $50.000, servicio puntual $100.000. Una sola vez por aparición.
+- **Oportunidades (configuración del piloto):** trabajo ocasional $150.000, venta de un objeto que ya no utilizan $100.000, apoyo económico no reembolsable $100.000, premio comunitario $50.000, servicio independiente ocasional $100.000. Una sola vez por aparición; no generan deudas. Estas cinco tarjetas son una propuesta posterior al documento pedagógico original.
+- **Tres categorías de tarjetas** (`CARD_CATEGORIES` en `packages/engine/src/constants.ts`), distintas de los gastos obligatorios:
+
+  | Categoría | Subtítulo | ¿Qué sucede? | ¿La familia decide? |
+  | --- | --- | --- | --- |
+  | Tentación de gasto | Decisión voluntaria | Aparece una compra opcional | Sí, compra o pasa |
+  | Imprevisto | Situación inesperada | Ocurre un evento inesperado | Decide cómo afrontarlo |
+  | Oportunidad | Ingreso o beneficio favorable | Recibe un beneficio económico | Aplica el beneficio de la tarjeta |
+
+  Cada categoría tiene su mecánica y su propósito pedagógico (este último, en la ayuda «¿Para qué sirve esta tarjeta?»). El juego no castiga a quien compra ni premia solo a quien ahorra.
+- **Levantar la tarjeta:** al caer en Imprevisto, Oportunidad, Compra Opcional o Tentación de Gasto se muestra el reverso y la tarjeta se voltea. La tarjeta ya la decidió el motor o el servidor; la animación solo la representa. Al recargar o reconectar aparece ya volteada, y con «reducir movimiento» se muestra directamente de frente.
 - **Mazos:** tres mazos por familia (5 imprevistos, 5 oportunidades, 6 compras), barajados al inicio; la tarjeta activa se conserva hasta resolverse y luego va al descarte; al agotarse se baraja el descarte; no se reinician al cambiar de mes.
 - **Banco:** préstamo pequeño (300.000 + 50.000), préstamo grande (500.000 + 100.000), microcrédito (250.000 + 50.000), tarjeta en tramos (75/20, 150/40, 225/60, 300/80 mil). Un contrato activo por familia; vencido sigue activo mientras tenga saldo; costo registrado una vez; sin interés compuesto ni multas; abonos primero a capital y luego al costo; vencimiento al cierre del mes 2 (contratos del mes 1) o del mes 3 (meses 2 y 3). Para simplificar, el monto usado de la tarjeta entra a caja como financiamiento.
 - **Estaciones:** Banco (desembolsos, abonos, oportunidades, inicio del mes siguiente), Supermercado (alimentación), Centro Comercial (compras), Empresa / Servicios (arriendo, transporte, educación, imprevistos). Mientras hay una solicitud pendiente, la familia no puede hacer otras operaciones económicas; al validar se revalidan saldo y estado. En modo local la validación es inmediata con las mismas reglas.
@@ -120,9 +130,9 @@ Los valores del piloto están en `packages/engine/src/constants.ts`.
 | Conjunto | Resultado |
 | --- | --- |
 | `npm run typecheck` (motor, servidor, web) | ✅ sin errores |
-| Vitest — motor (`packages/engine/test`) | ✅ 31 pruebas: caso numérico de aceptación de tres meses (entradas $12.300.000 − salidas $11.700.000 = $600.000), las 21 reglas obligatorias, geometría del tablero, validación de entradas y una simulación de 300 jugadas comprobando invariantes |
+| Vitest — motor (`packages/engine/test`) | ✅ 35 pruebas: caso numérico de aceptación de tres meses (entradas $12.300.000 − salidas $11.700.000 = $600.000), las 21 reglas obligatorias, geometría del tablero, validación de entradas, una simulación de 300 jugadas comprobando invariantes y los nombres y valores exactos de las tres categorías de tarjetas |
 | Vitest — servidor (`apps/server/test`) | ✅ 11 pruebas: sin MongoDB responde 503 con explicación; el código público no da permisos; roles por clave; una familia no ve ni modifica otra; una estación no actúa como facilitador ni como familia; saldos del cliente rechazados; idempotencia; **dos aprobaciones simultáneas → una aplicada y otra 409**; pausa; dado decidido por el servidor; notificación en tiempo real; rechazo de sockets sin clave |
-| Playwright — escritorio | ✅ 8 recorridos: crear demostración, completar un turno, comprar y rechazar, reservar y pagar, contratar y abonar, cerrar un mes y recuperar tras recargar, completar el juego (3 ingresos, reflexión, CSV), **aprobar una operación en modo conectado** con tres contextos de navegador (familia, estación, facilitador) |
+| Playwright — escritorio | ✅ 11 recorridos: crear demostración, completar un turno, comprar y rechazar, reservar y pagar, contratar y abonar, cerrar un mes y recuperar tras recargar, completar el juego (3 ingresos, reflexión, CSV), **aprobar una operación en modo conectado** con tres contextos de navegador (familia, estación, facilitador), levantar una tarjeta (reverso → frente, misma tarjeta tras recargar, foco en la acción), tarjeta directamente de frente con «reducir movimiento» y la tabla de categorías en «Reglas» |
 | Playwright — celular (Pixel 7) | ✅ acciones primero, tablero completo bajo demanda, sin desplazamiento horizontal, diálogo de crédito utilizable |
 
 **No ejecutado:** las pruebas contra un MongoDB real. En este entorno la descarga del binario de MongoDB está bloqueada por la red, así que el modo conectado se probó con el almacén en memoria de pruebas. `MongoStore` (`apps/server/src/store/mongo.ts`) usa el driver oficial con índices únicos y `replaceOne` condicionado por versión, pero **no se verificó contra un servidor MongoDB**. Para hacerlo: configure `MONGODB_URI`, ejecute `npm start` y repita el recorrido de aula.
@@ -132,8 +142,8 @@ Los valores del piloto están en `packages/engine/src/constants.ts`.
 Los recursos aprobados están en `referencias/` (logotipo, tablero y ruleta) y ya están integrados:
 
 - **Logotipo:** copia sin modificar en `apps/web/public/marca/logo-pixeles.png`, referenciada por `LOGO_PIXELES_SRC` en `apps/web/src/brand.tsx`. Se muestra en la pantalla de inicio, en las barras superiores y en el resumen imprimible.
-- **Ilustraciones de casillas:** recortadas del tablero de referencia en `apps/web/public/marca/casillas/`.
-- **Tablero y ruleta:** el estilo sigue las referencias (cabeceras de color, marco azul profundo, flechas de recorrido; rueda fija con flecha giratoria). El tablero sigue siendo interactivo y las reglas prevalecen sobre la imagen.
+- **Iconos de casillas:** recortados del tablero v2 (`referencias/tablero-v2.webp`) en `apps/web/public/marca/casillas/`; también se usan en el reverso de las tarjetas.
+- **Tablero y ruleta:** el tablero sigue el v2 (cabecera de color con el título alineado a la izquierda, importe con «COP / mes», icono en círculo, instrucción breve cuando el tablero es grande, líneas finas y esquinas rectas, flechas de recorrido); la ruleta mantiene la rueda fija con flecha giratoria. El tablero sigue siendo interactivo y las reglas prevalecen sobre la imagen.
 - **Paleta y tipografía:** colores extraídos de las referencias, con ajustes documentados donde el texto no alcanzaba 4,5:1 de contraste. Tipografía Nunito, servida localmente.
 
 Detalle de la paleta, diferencias con las reglas y cómo reemplazar cada recurso: [`referencias/README.md`](referencias/README.md).

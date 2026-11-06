@@ -54,16 +54,18 @@ export interface PurchaseItem {
   id: string;
   label: string;
   price: number;
+  /** Frase breve de la situación que muestra la tarjeta (texto editable del piloto). */
+  situation: string;
 }
 
 /** Mazo de compras y tentaciones (seis tarjetas). */
 export const PURCHASES: PurchaseItem[] = [
-  { id: 'celular', label: 'Celular nuevo', price: 500_000 },
-  { id: 'ropa', label: 'Ropa', price: 300_000 },
-  { id: 'cine', label: 'Cine', price: 150_000 },
-  { id: 'cena', label: 'Cena familiar', price: 200_000 },
-  { id: 'videojuegos', label: 'Videojuegos', price: 250_000 },
-  { id: 'promocion', label: 'Promoción comercial', price: 350_000 },
+  { id: 'celular', label: 'Celular nuevo', price: 500_000, situation: 'Sale un modelo nuevo y el celular actual todavía funciona.' },
+  { id: 'ropa', label: 'Ropa', price: 300_000, situation: 'En la vitrina hay ropa que a alguien de la familia le gustaría estrenar.' },
+  { id: 'cine', label: 'Cine', price: 150_000, situation: 'Se estrena una película que la familia quiere ver.' },
+  { id: 'cena', label: 'Cena familiar', price: 200_000, situation: 'Proponen salir a cenar todos juntos.' },
+  { id: 'videojuegos', label: 'Videojuegos', price: 250_000, situation: 'Llega un videojuego que los más jóvenes estaban esperando.' },
+  { id: 'promocion', label: 'Promoción comercial', price: 350_000, situation: 'Una oferta «solo por hoy» invita a comprar algo que no estaba en los planes.' },
 ];
 export const FAMILY_OUTING_OPTIONS = ['cine', 'cena'];
 
@@ -123,13 +125,74 @@ export interface OpportunityCard {
 }
 
 /** Oportunidades: configuración de la versión piloto. */
+/**
+ * Oportunidades: propuesta posterior al documento pedagógico original
+ * (configuración de la versión piloto). Los identificadores internos se conservan
+ * para no romper partidas guardadas; solo cambian los nombres visibles.
+ */
 export const OPPORTUNITIES: OpportunityCard[] = [
-  { id: 'trabajo_ocasional', label: 'Trabajo ocasional', amount: 150_000, description: 'Un trabajo de fin de semana.' },
-  { id: 'venta_objeto', label: 'Venta de un objeto sin uso', amount: 100_000, description: 'Venden algo que ya no usaban.' },
-  { id: 'apoyo_red', label: 'Apoyo de una red cercana', amount: 100_000, description: 'Familiares o vecinos dan una mano.' },
-  { id: 'premio_comunitario', label: 'Premio comunitario', amount: 50_000, description: 'Ganan un reconocimiento del barrio.' },
-  { id: 'servicio_puntual', label: 'Servicio puntual', amount: 100_000, description: 'Les pagan por un servicio de un día.' },
+  { id: 'trabajo_ocasional', label: 'Trabajo ocasional', amount: 150_000, description: 'Les ofrecen un trabajo por unos días.' },
+  { id: 'venta_objeto', label: 'Venta de un objeto que ya no utilizan', amount: 100_000, description: 'Venden algo de la casa que ya no usaban.' },
+  { id: 'apoyo_red', label: 'Apoyo económico no reembolsable', amount: 100_000, description: 'Reciben un apoyo que no tienen que devolver.' },
+  { id: 'premio_comunitario', label: 'Premio comunitario', amount: 50_000, description: 'La comunidad reconoce a la familia con un premio.' },
+  { id: 'servicio_puntual', label: 'Servicio independiente ocasional', amount: 100_000, description: 'Les pagan por un servicio independiente de un día.' },
 ];
+
+export type CardCategoryId = 'tentacion' | 'imprevisto' | 'oportunidad';
+
+export interface CardCategory {
+  id: CardCategoryId;
+  /** Nombre de la categoría (plural) y de una tarjeta (singular). */
+  label: string;
+  singular: string;
+  subtitle: string;
+  instruction: string;
+  description: string;
+  mechanic: string;
+  purpose: string;
+  whatHappens: string;
+  familyDecides: string;
+}
+
+/** Definición pedagógica de las tres categorías de tarjetas. */
+export const CARD_CATEGORIES: Record<CardCategoryId, CardCategory> = {
+  tentacion: {
+    id: 'tentacion',
+    label: 'Tentaciones de gasto',
+    singular: 'Tentación de gasto',
+    subtitle: 'Decisión voluntaria',
+    instruction: 'Compra o pasa',
+    description: 'Representan deseos, ofertas comerciales y gastos no esenciales. La familia puede aceptar o rechazar la compra después de discutirla.',
+    mechanic: 'Conversen desde sus roles y decidan si compran. Si compran, se descuenta de su dinero disponible; si no, conservan el dinero.',
+    purpose: 'Distinguir necesidades y deseos, reconocer la presión comercial y comprender el costo de oportunidad.',
+    whatHappens: 'Aparece una compra opcional',
+    familyDecides: 'Sí, compra o pasa',
+  },
+  imprevisto: {
+    id: 'imprevisto',
+    label: 'Imprevistos económicos',
+    singular: 'Imprevisto',
+    subtitle: 'Situación inesperada',
+    instruction: 'Toma una tarjeta',
+    description: 'Acontecimientos que alteran el presupuesto familiar y que no necesariamente dependen de las decisiones de los participantes.',
+    mechanic: 'Queda registrado como algo por pagar. Decidan cómo afrontarlo: pagar todo o una parte con el dinero disponible o una reserva, pedir un crédito o dejarlo pendiente.',
+    purpose: 'Comprender la incertidumbre financiera, la importancia de contar con reservas y las consecuencias del endeudamiento ante emergencias.',
+    whatHappens: 'Ocurre un evento inesperado',
+    familyDecides: 'Decide cómo afrontarlo',
+  },
+  oportunidad: {
+    id: 'oportunidad',
+    label: 'Oportunidades económicas',
+    singular: 'Oportunidad',
+    subtitle: 'Ingreso o beneficio favorable',
+    instruction: 'Toma una tarjeta',
+    description: 'Situaciones positivas que pueden ayudar a una familia a mejorar su presupuesto, sin recurrir necesariamente al endeudamiento.',
+    mechanic: 'Reciban el beneficio indicado. Se registra una sola vez y no genera deudas.',
+    purpose: 'Reconocer alternativas para mejorar los ingresos, valorar la iniciativa económica y comprender que las oportunidades pueden contribuir a la estabilidad familiar.',
+    whatHappens: 'Recibe un beneficio económico',
+    familyDecides: 'Aplica el beneficio de la tarjeta',
+  },
+};
 
 export interface BankTier {
   principal: number;
