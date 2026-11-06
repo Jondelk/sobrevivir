@@ -71,7 +71,7 @@ npm run check       # typecheck + test + build
 packages/engine   Motor de reglas puro en TypeScript (sin E/S). Estados, comandos, mazos,
                   banco, validaciones, selectores contables, esquemas zod y exportación CSV.
 apps/server       Express 5 + Socket.IO 4 + driver oficial de MongoDB. Autoridad en modo aula.
-apps/web          React 19 + Vite. Modo local (motor + localStorage) y modo aula (API + socket).
+apps/web          React 19 + Vite (tipografía Nunito local). Modo local (motor + localStorage) y modo aula (API + socket).
 e2e               Pruebas Playwright.
 referencias       Recursos visuales aprobados (pendientes; ver referencias/README.md).
 ```
@@ -129,7 +129,14 @@ Los valores del piloto están en `packages/engine/src/constants.ts`.
 
 ## 8. Recursos visuales
 
-La carpeta `referencias` no existía al construir esta versión: **faltan el logotipo de PIXELES, el tablero y la ruleta aprobados**. Se usa una composición tipográfica provisional y no se inventó ningún logotipo. Ver [`referencias/README.md`](referencias/README.md) para la ubicación de cada recurso y cómo reemplazarlo (logotipo: `apps/web/public/marca/` + `LOGO_PIXELES_SRC` en `apps/web/src/brand.tsx`; colores: `:root` en `apps/web/src/styles.css`).
+Los recursos aprobados están en `referencias/` (logotipo, tablero y ruleta) y ya están integrados:
+
+- **Logotipo:** copia sin modificar en `apps/web/public/marca/logo-pixeles.png`, referenciada por `LOGO_PIXELES_SRC` en `apps/web/src/brand.tsx`. Se muestra en la pantalla de inicio, en las barras superiores y en el resumen imprimible.
+- **Ilustraciones de casillas:** recortadas del tablero de referencia en `apps/web/public/marca/casillas/`.
+- **Tablero y ruleta:** el estilo sigue las referencias (cabeceras de color, marco azul profundo, flechas de recorrido; rueda fija con flecha giratoria). El tablero sigue siendo interactivo y las reglas prevalecen sobre la imagen.
+- **Paleta y tipografía:** colores extraídos de las referencias, con ajustes documentados donde el texto no alcanzaba 4,5:1 de contraste. Tipografía Nunito, servida localmente.
+
+Detalle de la paleta, diferencias con las reglas y cómo reemplazar cada recurso: [`referencias/README.md`](referencias/README.md).
 
 ## 9. Limitaciones conocidas
 

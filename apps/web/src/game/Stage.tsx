@@ -21,7 +21,8 @@ import {
   type Phase,
 } from '@sobrevivir/engine';
 import { Die } from '../components/Die';
-import { Icon, tileIcon } from '../components/Icons';
+import { Icon } from '../components/Icons';
+import { tileArtFor } from '../brand';
 import { Roulette } from '../components/Roulette';
 import { HelpTip, Money, TextField, useGame, useNow, waited } from '../components/ui';
 import { tileHelp } from '../components/Board';
@@ -59,7 +60,7 @@ function TurnHeader() {
   const color = spun ? PERSONAL_COLORS[spun.sector] : undefined;
   return (
     <div className="turn-tools">
-      <Roulette spin={spun} participants={f.participants} size={118} />
+      <Roulette spin={spun} participants={f.participants} size={136} />
       <div className="turn-who">
         {spun && color ? (
           <>
@@ -346,7 +347,7 @@ function Resolution({ open }: { open: Open }) {
   return (
     <section className={`resolution res-${tile.kind}`} aria-labelledby="res-title">
       <header className="res-head">
-        <Icon name={tileIcon(tile)} size={30} />
+        <img className="res-art" src={tileArtFor(tile)} alt="" />
         <h2 id="res-title">{tile.label}</h2>
         <HelpTip title={tile.label}>{tileHelp(tile)}</HelpTip>
       </header>

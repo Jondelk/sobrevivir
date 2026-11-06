@@ -9,6 +9,7 @@ import {
   type FamilyState,
 } from '@sobrevivir/engine';
 import { Money, downloadText, useGame } from '../components/ui';
+import { Wordmark } from '../brand';
 import { monthFlows } from './Closing';
 
 export function DecisionSummary({ f }: { f: FamilyState }) {
@@ -53,6 +54,7 @@ export function FinalReflection() {
   return (
     <section className="final" aria-labelledby="final-title">
       <header className="closing-head">
+        <span className="final-logo"><Wordmark size="md" /></span>
         <span className="eyebrow">Reflexión final · {f.name}</span>
         <h2 id="final-title">¿Cómo terminó el trimestre?</h2>
         <p className="muted">{profile.name}. Aquí no hay ganadores ni perdedores: el dinero final se lee junto con lo pendiente y las decisiones.</p>

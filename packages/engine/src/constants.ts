@@ -181,12 +181,17 @@ export function contractDueMonth(monthTaken: Month): Month {
 }
 
 export type ColorId = 'azul' | 'naranja' | 'verde' | 'morado' | 'rojo';
+/**
+ * Colores de la ruleta tomados de referencias/ruleta.png. El verde se oscureció
+ * ligeramente (#249534 → #1D8030) para que el texto blanco cumpla 4,5:1, y el
+ * naranja usa texto oscuro porque el blanco no alcanza el contraste mínimo.
+ */
 export const PERSONAL_COLORS: { id: ColorId; label: string; hex: string; ink: string }[] = [
-  { id: 'azul', label: 'Azul', hex: '#2F6DB5', ink: '#FFFFFF' },
-  { id: 'naranja', label: 'Naranja', hex: '#E98B46', ink: '#182B3A' },
-  { id: 'verde', label: 'Verde', hex: '#3E8E4F', ink: '#FFFFFF' },
-  { id: 'morado', label: 'Morado', hex: '#7A4E9E', ink: '#FFFFFF' },
-  { id: 'rojo', label: 'Rojo', hex: '#C2413A', ink: '#FFFFFF' },
+  { id: 'azul', label: 'Azul', hex: '#0065D2', ink: '#FFFFFF' },
+  { id: 'naranja', label: 'Naranja', hex: '#FE7D12', ink: '#102431' },
+  { id: 'verde', label: 'Verde', hex: '#1D8030', ink: '#FFFFFF' },
+  { id: 'morado', label: 'Morado', hex: '#762B9B', ink: '#FFFFFF' },
+  { id: 'rojo', label: 'Rojo', hex: '#C91332', ink: '#FFFFFF' },
 ];
 export const COLOR_IDS: ColorId[] = PERSONAL_COLORS.map((c) => c.id);
 

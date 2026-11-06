@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode, type KeyboardEvent } from 'react';
-import { BOARD, CATEGORY_LABEL, TILE_CATEGORY, tileGridPosition, type Tile } from '@sobrevivir/engine';
-import { Icon, tileIcon } from './Icons';
+import { BOARD, CATEGORY_LABEL, COMMITMENTS, TILE_CATEGORY, formatCOP, tileGridPosition, type Tile } from '@sobrevivir/engine';
+import { tileArtFor } from '../brand';
 import { prefersReducedMotion } from '../lib/router';
 
 const TILE_HELP: Record<Tile['kind'], string> = {
@@ -75,10 +75,18 @@ export function Board({ position, familyLabel, activeIndex, children, compact, t
 
   return (
     <div className={`board ${compact ? 'board-compact' : ''}`}>
+      {!compact && (
+        <>
+          <span className="board-arrow board-arrow-up" aria-hidden="true" />
+          <span className="board-arrow board-arrow-right" aria-hidden="true" />
+          <span className="board-arrow board-arrow-down" aria-hidden="true" />
+          <span className="board-arrow board-arrow-left" aria-hidden="true" />
+        </>
+      )}
       <div
         className="board-grid"
         role="group"
-        aria-label="Tablero de 24 casillas. Usa las flechas para recorrerlo y Enter para ver qué ocurre en cada casilla."
+        aria-label="Tablero de 24 casillas. El recorrido sube por la izquierda, avanza por arriba, baja por la derecha y vuelve por abajo. Usa las flechas para recorrerlo y Enter para ver qué ocurre en cada casilla."
       >
         {BOARD.map((tile) => {
           const { row, col } = tileGridPosition(tile.index);
@@ -101,10 +109,13 @@ export function Board({ position, familyLabel, activeIndex, children, compact, t
               aria-label={`${tile.label}. ${CATEGORY_LABEL[cat]}.${here ? ` Aquí está la ficha de ${familyLabel}.` : ''}`}
               aria-expanded={info === tile.index}
             >
-              <span className="tile-band" aria-hidden="true" />
-              <Icon name={tileIcon(tile)} size={compact ? 18 : 26} className="tile-icon" />
-              <span className="tile-label">{tile.label === 'Inicio / Cierre de mes' ? 'Inicio' : tile.label}</span>
-              {tile.index === 0 && !compact && <span className="tile-sub">Cierre de mes</span>}
+              <span className="tile-head">
+                <span className="tile-label">{tile.label}</span>
+              </span>
+              <span className="tile-body" aria-hidden="true">
+                {tile.concept && !compact && <span className="tile-amount">{formatCOP(COMMITMENTS[tile.concept].amount)} / mes</span>}
+                <img className="tile-art" src={tileArtFor(tile)} alt="" draggable={false} />
+              </span>
             </button>
           );
         })}
@@ -113,8 +124,8 @@ export function Board({ position, familyLabel, activeIndex, children, compact, t
           className="token"
           aria-hidden="true"
           style={{
-            left: `${((token.col - 1 + 0.8) / 7) * 100}%`,
-            top: `${((token.row - 1 + 0.78) / 7) * 100}%`,
+            left: `${((token.col - 1 + 0.82) / 7) * 100}%`,
+            top: `${((token.row - 1 + 0.8) / 7) * 100}%`,
             ['--token' as string]: tokenColor ?? 'var(--ink)',
           }}
         >
